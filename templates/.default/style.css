@@ -62,12 +62,6 @@
   text-align: left;
   color: var(--color-main-black);
 }
-#VueBasket .basket-item-description-content .article {
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 14.4px;
-  text-align: left;
-}
 #VueBasket .basket-item-description .image {
   width: 80px;
   height: 80px;
@@ -89,7 +83,7 @@
   left: auto;
   transform: unset;
 }
-#VueBasket .basket-item-amount-container {
+#VueBasket .basket-item-quantity-container {
   position: relative;
   display: flex;
   box-sizing: content-box;
@@ -98,7 +92,7 @@
   -moz-column-gap: 10px;
        column-gap: 10px;
 }
-#VueBasket .basket-item-amount input {
+#VueBasket .basket-item-quantity input {
   width: 40px;
   height: 40px;
   border: none;
@@ -106,7 +100,11 @@
   background-color: none;
   text-align: center;
 }
-#VueBasket .basket-item-amount-btn {
+#VueBasket .basket-item-quantity input:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+#VueBasket .basket-item-quantity-btn {
   width: 40px;
   height: 40px;
   border-radius: 4px;
@@ -114,9 +112,16 @@
   position: relative;
   -moz-column-gap: 2px;
        column-gap: 2px;
+  text-decoration: none;
+  outline: none;
+  border: none;
   cursor: pointer;
 }
-#VueBasket .basket-item-amount-btn::after {
+#VueBasket .basket-item-quantity-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+#VueBasket .basket-item-quantity-btn::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -129,10 +134,10 @@
   background-repeat: no-repeat;
   pointer-events: none;
 }
-#VueBasket .basket-item-amount-btn.minus::after {
+#VueBasket .basket-item-quantity-btn.minus::after {
   background-image: url("./images/minus.svg");
 }
-#VueBasket .basket-item-amount-btn.plus::after {
+#VueBasket .basket-item-quantity-btn.plus::after {
   background-image: url("./images/plus.svg");
 }
 #VueBasket .basket-item-action {

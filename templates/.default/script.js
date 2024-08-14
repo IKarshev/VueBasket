@@ -6,18 +6,42 @@ BX.ready(function(){
             arResult: BX.message('arResult'),
         },
         methods: {
-            AmountPlus: function(index){
-                // TODO - запрос на бэк
-                this.arResult.ITEMS[index].QUANTITY++;
+            QuantityPlus: function(item){
+                if( Number(item.QUANTITY) < Number(item.MAX_QUANTITY) ){
+                    this.oldQuantity = item.QUANTITY;
+                    item.QUANTITY++;
+                    this.QuantityChange(item);
+                }
             },
-            AmountMinus: function(index){
-                // TODO - запрос на бэк
-                if( this.arResult.ITEMS[index].QUANTITY > 1 ) this.arResult.ITEMS[index].QUANTITY--;
+            QuantityMinus: function(item){
+                if( Number(item.QUANTITY) > 1 ){
+                    this.oldQuantity = item.QUANTITY;
+                    item.QUANTITY--;
+                    this.QuantityChange(item);
+                }
             },
             GetFullPrice(item) {
                 // TODO - форматирование цены, подстановка валюты из настроек
                 return item.QUANTITY * item.PRICE;
             },
+            QuantityChange: function(item){
+
+                var request = BX.ajax.runComponentAction('IvanKarshev:VueBasket', 'ChangeItemQuantity', {
+                    mode: 'class',
+                    data: {
+                        'ID': item.ID,
+                        'QUANTITY': item.QUANTITY,
+                    },
+                }).then(
+                    response => {
+                        item.QUANTITY = response['data']['NEW_QUANTITY'];
+                        item.MAX_QUANTITY = response['data']['MAX_QUANTITY'];
+                    },
+                    error => {
+                        item.QUANTITY = this.oldQuantity;
+                    }
+                );
+            }
         }
     });
 });

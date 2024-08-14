@@ -65,12 +65,6 @@
 						color: var(--color-main-black);
 					}
 				}
-				.article{
-					font-size: 12px;
-					font-weight: 400;
-					line-height: 14.4px;
-					text-align: left;
-				}
 			}
 
 
@@ -94,7 +88,7 @@
 				}
 			}
 		}
-		&-amount{
+		&-quantity{
 			$column-gap: 10px;
 			&-container{
 				position: relative;
@@ -111,6 +105,10 @@
 				outline: none;
 				background-color: none;
 				text-align: center;
+				&:disabled{
+					opacity: .5;
+					cursor: default;
+				}
 			}
 			&-btn{
 				width: 40px;
@@ -119,7 +117,14 @@
 				background-color: #f1f1f1;
 				position: relative;
 				column-gap: 2px;
+				text-decoration: none;
+				outline: none;
+				border: none;
 				cursor: pointer;
+				&:disabled{
+					opacity: .5;
+					cursor: default;
+				}
 				&::after{
 					content: "";
 					position: absolute;

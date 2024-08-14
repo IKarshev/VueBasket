@@ -17,12 +17,12 @@ use Bitrix\Sale;
 
 Loader::includeModule('iblock');
 
-class FormComponent extends CBitrixComponent implements Controllerable{
+class VueBasket extends CBitrixComponent implements Controllerable{
 
     public function configureActions(){
         // сбрасываем фильтры по-умолчанию
         return [
-            'Send_Form' => ['prefilters' => [], 'postfilters' => []],
+            'ChangeItemQuantity' => ['prefilters' => [], 'postfilters' => []],
         ];
     }
 
@@ -72,36 +72,71 @@ class FormComponent extends CBitrixComponent implements Controllerable{
      * Получаем объект корзины
      * @return Sale\Basket
      */
-    private static function GetBasketItem()
+    private static function GetBasketItem():array
     {
         $basket = self::GetBasketObject();
         foreach ($basket as $basketItem) {
+
+            $IblockItemData = array_shift(\Bitrix\Iblock\ElementTable::getList([
+                'select' => ['ID', 'IBLOCK_ID', 'NAME', 'PREVIEW_PICTURE'],
+                'filter' => ['ID' => $basketItem->getProductId()],
+            ])->fetchAll());
+
+            $arProduct = CCatalogProduct::GetByID($basketItem->getProductId());
+
             $basketItems[] = [
                 'ID' => $basketItem->getId(),
                 'PRODUCT_ID' => $basketItem->getProductId(),
                 'NAME' => $basketItem->getField('NAME'),
                 'QUANTITY' => $basketItem->getQuantity(),
+                'MAX_QUANTITY' => $arProduct['QUANTITY'],
                 'PRICE' => $basketItem->getPrice(),
                 'FINAL_PRICE' => $basketItem->getFinalPrice(),
                 'WEIGHT' => $basketItem->getWeight(),
                 'CAN_BUY' => $basketItem->canBuy(),
                 'IS_DELAY' => $basketItem->isDelay(),
                 'DETAIL_PAGE_URL' => $basketItem->getField('DETAIL_PAGE_URL'),
+                'PREVIEW_PICTURE' => [
+                    'ID' => $IblockItemData['PREVIEW_PICTURE'],
+                    'SRC' => CFile::GetPath($IblockItemData['PREVIEW_PICTURE']),
+                    'RESIZE_SRC' => CFile::ResizeImageGet($IblockItemData['PREVIEW_PICTURE'], ['width' => 80, 'height' => 80], BX_RESIZE_IMAGE_PROPORTIONAL, true)['src'],
+                ],
+
             ];
         }
 
         return $basketItems;
     }
 
-    public function Send_FormAction(){
-        $request = Application::getInstance()->getContext()->getRequest();
-        // получаем файлы, post
-        $post = $request->getPostList();
-        $files = $request->getFileList()->toArray();
-        
-        
+    /**
+     * Увеличиваем количество в корзине
+     */
+    public function ChangeItemQuantityAction(){
 
-        
+        Loader::includeModule('iblock');
+        Loader::includeModule('sale');
+
+        $post = Application::getInstance()->getContext()->getRequest()->getPostList();
+
+        try {
+            $basket = self::GetBasketObject();
+            $basketItem = $basket->getItemById($post['ID']);
+
+            if( (int) $post['QUANTITY'] <= 0 ) throw new Exception("Кол-во не может быть меньше 1");
+            
+            $MaxQuantity = (int) CCatalogProduct::GetByID($basketItem->getProductId())['QUANTITY'];
+            $NewQuantity = (int) ($post['QUANTITY'] <= $MaxQuantity) ? $post['QUANTITY'] : $MaxQuantity;
+            $basketItem->setField('QUANTITY', $NewQuantity);
+            $basketItem->save();
+
+            return [
+                'NEW_QUANTITY' => $NewQuantity,
+                'MAX_QUANTITY' => $MaxQuantity,
+            ];
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+
     } 
 
 }
