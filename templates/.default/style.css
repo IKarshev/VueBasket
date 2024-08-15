@@ -1,34 +1,39 @@
 #VueBasket {
+  display: flex;
+  -moz-column-gap: 20px;
+       column-gap: 20px;
   width: 100%;
 }
 #VueBasket table, #VueBasket tbody {
   width: inherit;
   max-width: inherit;
 }
-#VueBasket .items-container tr {
-  border-top: 1px solid #E3E3E3;
+#VueBasket .items-container {
   width: inherit;
   max-width: inherit;
 }
-#VueBasket .items-container tr td {
+#VueBasket .items-container-table tr {
+  border-top: 1px solid #E3E3E3;
+}
+#VueBasket .items-container-table tr td {
   padding-top: 5px;
   padding-bottom: 10px;
   padding-right: 20px;
 }
-#VueBasket .items-container tr td:last-child {
+#VueBasket .items-container-table tr td:last-child {
   padding-right: 0;
 }
-#VueBasket .basket-item {
+#VueBasket .items-container-table .basket-item {
   border-top: 1px solid #E3E3E3;
   width: inherit;
   max-width: inherit;
 }
-#VueBasket .basket-item-description {
+#VueBasket .items-container-table .basket-item-description {
   display: flex;
   -moz-column-gap: 20px;
        column-gap: 20px;
 }
-#VueBasket .basket-item-description-content {
+#VueBasket .items-container-table .basket-item-description-content {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -40,7 +45,7 @@
   max-width: inherit;
   width: auto;
 }
-#VueBasket .basket-item-description-content .title-container {
+#VueBasket .items-container-table .basket-item-description-content .title-container {
   font-size: 16px;
   font-weight: 600;
   line-height: 22px;
@@ -55,23 +60,23 @@
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
 }
-#VueBasket .basket-item-description-content .title-container .title {
+#VueBasket .items-container-table .basket-item-description-content .title-container .title {
   font-size: 16px;
   font-weight: 600;
   line-height: 22.4px;
   text-align: left;
   color: var(--color-main-black);
 }
-#VueBasket .basket-item-description .image {
+#VueBasket .items-container-table .basket-item-description .image {
   width: 80px;
   height: 80px;
 }
-#VueBasket .basket-item-description .image .img-container {
+#VueBasket .items-container-table .basket-item-description .image .img-container {
   width: inherit;
   height: inherit;
   position: relative;
 }
-#VueBasket .basket-item-description .image .img-container img {
+#VueBasket .items-container-table .basket-item-description .image .img-container img {
   position: relative;
   width: 100%;
   height: 100%;
@@ -83,7 +88,7 @@
   left: auto;
   transform: unset;
 }
-#VueBasket .basket-item-quantity-container {
+#VueBasket .items-container-table .basket-item-quantity-container {
   position: relative;
   display: flex;
   box-sizing: content-box;
@@ -92,7 +97,7 @@
   -moz-column-gap: 10px;
        column-gap: 10px;
 }
-#VueBasket .basket-item-quantity input {
+#VueBasket .items-container-table .basket-item-quantity input {
   width: 40px;
   height: 40px;
   border: none;
@@ -100,11 +105,11 @@
   background-color: none;
   text-align: center;
 }
-#VueBasket .basket-item-quantity input:disabled {
+#VueBasket .items-container-table .basket-item-quantity input:disabled {
   opacity: 0.5;
   cursor: default;
 }
-#VueBasket .basket-item-quantity-btn {
+#VueBasket .items-container-table .basket-item-quantity-btn {
   width: 40px;
   height: 40px;
   border-radius: 4px;
@@ -117,11 +122,11 @@
   border: none;
   cursor: pointer;
 }
-#VueBasket .basket-item-quantity-btn:disabled {
+#VueBasket .items-container-table .basket-item-quantity-btn:disabled {
   opacity: 0.5;
   cursor: default;
 }
-#VueBasket .basket-item-quantity-btn::after {
+#VueBasket .items-container-table .basket-item-quantity-btn::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -134,19 +139,31 @@
   background-repeat: no-repeat;
   pointer-events: none;
 }
-#VueBasket .basket-item-quantity-btn.minus::after {
+#VueBasket .items-container-table .basket-item-quantity-btn.minus::after {
   background-image: url("./images/minus.svg");
 }
-#VueBasket .basket-item-quantity-btn.plus::after {
+#VueBasket .items-container-table .basket-item-quantity-btn.plus::after {
   background-image: url("./images/plus.svg");
 }
-#VueBasket .basket-item-action {
+#VueBasket .items-container-table .basket-item-action {
   position: relative;
   width: 34px;
 }
-#VueBasket .basket-item-action-container {
+#VueBasket .items-container-table .basket-item-action-container {
   width: inherit;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+}
+#VueBasket .total-block-sticky-container {
+  width: 400px;
+}
+#VueBasket .total-block-sticky-container .total-block {
+  position: sticky;
+  top: 20px;
+  width: 100%;
+  padding: 20px;
+  border: 2px solid #f1f1f1;
+  border-radius: 20px;
+  height: 100px;
 }/*# sourceMappingURL=style.css.map */

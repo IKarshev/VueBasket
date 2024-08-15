@@ -1,7 +1,7 @@
 #VueBasket{
+	display: flex;
+	column-gap: 20px;
 	width: 100%;
-	$color-dark-blue: #27479A;
-	$color-main-black: #191919;
 
 	table, tbody{
 		width: inherit;
@@ -9,152 +9,169 @@
 	}
 
 	.items-container{
-		tr{
-			border-top: 1px solid #E3E3E3;
-			width: inherit;
-			max-width: inherit;
-			td{
-				padding-top: 5px;
-				padding-bottom: 10px;
-				padding-right: 20px;
-				&:last-child{
-					padding-right: 0;
-				}
-			}
-		}
-	}
-
-	.basket-item{
-		border-top: 1px solid #E3E3E3;
 		width: inherit;
 		max-width: inherit;
-		&-description{
-			display: flex;
-			column-gap: 20px;
-
-			&-content{
-				display: flex;
-				flex-direction: column;
-				align-items: flex-start;
-				justify-content: space-between;
-				
-				height: auto;
-				max-height: unset;
-				min-height: unset;
-				padding: 12px 0 6px 0;
-				max-width: inherit;
-				width: auto;
-				.title-container{
-					font-size: 16px;
-					font-weight: 600;
-					line-height: 22px;
-					letter-spacing: 0em;
-					text-align: left;
-					color: var(--color-main-black);
-					height: max-content;
-					overflow: hidden;
-					text-overflow: ellipsis;
-					display: -webkit-box;
-					-webkit-line-clamp: 1;
-					-webkit-box-orient: vertical;
-					.title{
-						font-size: 16px;
-						font-weight: 600;
-						line-height: 22.4px;
-						text-align: left;
-						color: var(--color-main-black);
+		&-table{
+			tr{
+				border-top: 1px solid #E3E3E3;
+				td{
+					padding-top: 5px;
+					padding-bottom: 10px;
+					padding-right: 20px;
+					&:last-child{
+						padding-right: 0;
 					}
 				}
 			}
-
-
-			.image{
-				width: 80px;
-				height: 80px;
-				.img-container{
-					width: inherit;
-					height: inherit;
-					position: relative;
-					img{
-						position: relative;
-						width: 100%;
-						height: 100%;
-						object-fit: contain;
-						object-position: center;
-						top: auto;
-						left: auto;
-						transform: unset;
-					}
-				}
-			}
-		}
-		&-quantity{
-			$column-gap: 10px;
-			&-container{
-				position: relative;
-				display: flex;
-				box-sizing: content-box;
-				align-items: center;
-				width: 120px + $column-gap * 2;
-				column-gap: $column-gap;
-			}
-			input{
-				width: 40px;
-				height: 40px;
-				border: none;
-				outline: none;
-				background-color: none;
-				text-align: center;
-				&:disabled{
-					opacity: .5;
-					cursor: default;
-				}
-			}
-			&-btn{
-				width: 40px;
-				height: 40px;
-				border-radius: 4px;
-				background-color: #f1f1f1;
-				position: relative;
-				column-gap: 2px;
-				text-decoration: none;
-				outline: none;
-				border: none;
-				cursor: pointer;
-				&:disabled{
-					opacity: .5;
-					cursor: default;
-				}
-				&::after{
-					content: "";
-					position: absolute;
-					top: 50%;
-					left: 50%;
-					transform: translate(-50%, -50%);
-					width: 24px;
-					height: 24px;
-					background-size: contain;
-					background-position: center;
-					background-repeat: no-repeat;
-					pointer-events: none;
-				}
-				&.minus::after{
-					background-image: url('./images/minus.svg');
-				}
-				&.plus::after{
-					background-image: url('./images/plus.svg');
-				}
-			}
-		}
-		&-action{
-			position: relative;
-			width: 34px;
-			&-container{
+			.basket-item{
+				border-top: 1px solid #E3E3E3;
 				width: inherit;
-				position: absolute;
-				top: 50%;
-				transform: translateY(-50%);
+				max-width: inherit;
+				&-description{
+					display: flex;
+					column-gap: 20px;
+		
+					&-content{
+						display: flex;
+						flex-direction: column;
+						align-items: flex-start;
+						justify-content: space-between;
+						
+						height: auto;
+						max-height: unset;
+						min-height: unset;
+						padding: 12px 0 6px 0;
+						max-width: inherit;
+						width: auto;
+						.title-container{
+							font-size: 16px;
+							font-weight: 600;
+							line-height: 22px;
+							letter-spacing: 0em;
+							text-align: left;
+							color: var(--color-main-black);
+							height: max-content;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							display: -webkit-box;
+							-webkit-line-clamp: 1;
+							-webkit-box-orient: vertical;
+							.title{
+								font-size: 16px;
+								font-weight: 600;
+								line-height: 22.4px;
+								text-align: left;
+								color: var(--color-main-black);
+							}
+						}
+					}
+		
+		
+					.image{
+						width: 80px;
+						height: 80px;
+						.img-container{
+							width: inherit;
+							height: inherit;
+							position: relative;
+							img{
+								position: relative;
+								width: 100%;
+								height: 100%;
+								object-fit: contain;
+								object-position: center;
+								top: auto;
+								left: auto;
+								transform: unset;
+							}
+						}
+					}
+				}
+				&-quantity{
+					$column-gap: 10px;
+					&-container{
+						position: relative;
+						display: flex;
+						box-sizing: content-box;
+						align-items: center;
+						width: 120px + $column-gap * 2;
+						column-gap: $column-gap;
+					}
+					input{
+						width: 40px;
+						height: 40px;
+						border: none;
+						outline: none;
+						background-color: none;
+						text-align: center;
+						&:disabled{
+							opacity: .5;
+							cursor: default;
+						}
+					}
+					&-btn{
+						width: 40px;
+						height: 40px;
+						border-radius: 4px;
+						background-color: #f1f1f1;
+						position: relative;
+						column-gap: 2px;
+						text-decoration: none;
+						outline: none;
+						border: none;
+						cursor: pointer;
+						&:disabled{
+							opacity: .5;
+							cursor: default;
+						}
+						&::after{
+							content: "";
+							position: absolute;
+							top: 50%;
+							left: 50%;
+							transform: translate(-50%, -50%);
+							width: 24px;
+							height: 24px;
+							background-size: contain;
+							background-position: center;
+							background-repeat: no-repeat;
+							pointer-events: none;
+						}
+						&.minus::after{
+							background-image: url('./images/minus.svg');
+						}
+						&.plus::after{
+							background-image: url('./images/plus.svg');
+						}
+					}
+				}
+				&-action{
+					position: relative;
+					width: 34px;
+					&-container{
+						width: inherit;
+						position: absolute;
+						top: 50%;
+						transform: translateY(-50%);
+					}
+				}
 			}
 		}
 	}
+	
+	.total-block-sticky-container{
+		width: 400px;
+		.total-block{
+			position: sticky;
+			top: 20px;
+
+			width: 100%;
+			padding: 20px;
+			border: 2px solid #f1f1f1;
+			border-radius: 20px;
+			height: 100px;
+		}
+
+	}
+
 }

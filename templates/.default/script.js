@@ -4,6 +4,32 @@ BX.ready(function(){
         data: {
             arParams: BX.message('arParams'),
             arResult: BX.message('arResult'),
+            SalePrice: 200,
+        },
+        computed: {
+
+            /**
+             * Возвращаем стоимость товаров
+             * @returns {number}
+             */
+            ItemsPrice()
+            {
+                let ItemsPrice = 0;
+                this.arResult.ITEMS.forEach(item => {
+                    ItemsPrice += item.QUANTITY * item.PRICE;
+                });
+
+                return ItemsPrice;
+            },
+
+            /**
+             * Возвращаем итоговую стоимость
+             * @returns {number}
+             */
+            TotalPrice()
+            {
+                return Number(this.ItemsPrice) - Number(this.SalePrice);
+            }
         },
         methods: {
             QuantityPlus: function(item){
