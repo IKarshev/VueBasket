@@ -23,6 +23,8 @@ class VueBasket extends CBitrixComponent implements Controllerable{
         // сбрасываем фильтры по-умолчанию
         return [
             'ChangeItemQuantity' => ['prefilters' => [], 'postfilters' => []],
+            'DeleteItem' => ['prefilters' => [], 'postfilters' => []],
+            'RestoreItem' => ['prefilters' => [], 'postfilters' => []],
         ];
     }
 
@@ -134,9 +136,62 @@ class VueBasket extends CBitrixComponent implements Controllerable{
                 'MAX_QUANTITY' => $MaxQuantity,
             ];
         } catch (\Throwable $th) {
-            throw $th;
+            return $th;
         }
+    }
 
-    } 
+    /**
+     * Удаляем товар из корзины
+     */
+    public function DeleteItemAction(){
+
+        Loader::includeModule('iblock');
+        Loader::includeModule('sale');
+
+        $post = Application::getInstance()->getContext()->getRequest()->getPostList();
+
+        try {
+            if( !isset($post['ID']) || trim($post['ID']) == "" ) throw new Exception("Не корректный ID позиции товара в корзине");
+
+            $basket = self::GetBasketObject();
+            $basket->getItemById( (int)$post['ID'] )->delete();
+            $basket->save();
+            return;
+        } catch (\Throwable $th) {
+            return $th;
+        }
+    }
+
+    /**
+     * Восстановление товара в корзине (добавление товара в корзину)
+     */
+    public function RestoreItemAction(){
+        Loader::includeModule('iblock');
+        Loader::includeModule('sale');
+
+        $post = Application::getInstance()->getContext()->getRequest()->getPostList();
+
+        try {
+            if( !isset($post['PRODUCT_ID']) || trim($post['PRODUCT_ID']) == "" ) throw new Exception("Не корректный ID товара");
+            $Quantity = $post['QUANTITY'] ?? 1;
+
+            $basket = self::GetBasketObject();
+            $item = $basket->createItem('catalog', $post['PRODUCT_ID']);
+            $item->setFields(array(
+                'QUANTITY' => $Quantity,
+                'CURRENCY' => Bitrix\Currency\CurrencyManager::getBaseCurrency(),
+                'LID' => Bitrix\Main\Context::getCurrent()->getSite(),
+                'PRODUCT_PROVIDER_CLASS' => 'CCatalogProductProvider',
+            ));
+            $basket->save();
+
+            return [
+                'QUANTITY' => $Quantity,
+            ];
+
+        } catch (\Throwable $th) {
+            return $th;
+        }
+    }
 
 }
