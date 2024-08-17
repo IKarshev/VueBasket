@@ -22,6 +22,11 @@
 						padding-right: 0;
 					}
 				}
+				&.deleted{
+					td{
+						padding-top: 10px;
+					}
+				}
 			}
 			.basket-item{
 				border-top: 1px solid #E3E3E3;
@@ -147,12 +152,66 @@
 				}
 				&-action{
 					position: relative;
-					width: 34px;
+					min-width: 34px;
+					cursor: pointer;
 					&-container{
+						display: flex;
+						align-items: center;
+						justify-content: flex-end;
 						width: inherit;
 						position: absolute;
 						top: 50%;
 						transform: translateY(-50%);
+						width: 100%;
+						& > div{
+							margin-right: 10px;
+							&:last-child{
+								margin-right: 0;
+							}
+						}
+					}
+					.icon{
+						display: block;
+						box-sizing: border-box;
+						position: relative;
+						padding: 0;
+						margin: 0;
+						width: 16px;
+						height: 16px;
+						min-width: 16px;
+						min-height: 16px;
+						&::before{
+							content: "";
+							position: absolute;
+							top: 50%;
+							left: 50%;
+							transform: translate(-50%, -50%);
+							background-repeat: no-repeat;
+							background-position: center;
+							background-size: contain;
+							width: 100%;
+							height: 100%;
+						}
+						&.icon-delete::before{
+							background-image: url('./images/delete.svg');
+						}
+					}
+				}
+				&-price{
+					.price-container{
+						position: relative;
+						width: max-content;
+						white-space: nowrap;
+						&.sale span{
+							&:first-child{
+								position: absolute;
+								top: 0;
+								right: 0;
+								transform: translate(100%, -100%);
+								color: #ED0A34;
+								text-decoration: line-through;
+							}
+						}
 					}
 				}
 			}

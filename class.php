@@ -23,6 +23,8 @@ class VueBasket extends CBitrixComponent implements Controllerable{
         // сбрасываем фильтры по-умолчанию
         return [
             'ChangeItemQuantity' => ['prefilters' => [], 'postfilters' => []],
+            'DeleteItem' => ['prefilters' => [], 'postfilters' => []],
+            'RestoreItem' => ['prefilters' => [], 'postfilters' => []],
         ];
     }
 
@@ -55,6 +57,7 @@ class VueBasket extends CBitrixComponent implements Controllerable{
         $this->arResult = [];
 
         $this->arResult['ITEMS'] = self::GetBasketItem();
+        $this->arResult['PRICE_FORMAT'] = CCurrencyLang::GetCurrencyFormat( \Bitrix\Currency\CurrencyManager::getBaseCurrency() )['FORMAT_STRING'];
 
         return $this->arResult;
     }
@@ -74,7 +77,14 @@ class VueBasket extends CBitrixComponent implements Controllerable{
      */
     private static function GetBasketItem():array
     {
+        global $USER;
         $basket = self::GetBasketObject();
+
+        $basket->refreshData(['PRICE', 'COUPONS']);
+        $discounts = \Bitrix\Sale\Discount::buildFromBasket($basket, new \Bitrix\Sale\Discount\Context\Fuser($basket->getFUserId(true)));
+        $discounts->calculate();
+        $prices = $discounts->getApplyResult(true)['PRICES']['BASKET'];
+
         foreach ($basket as $basketItem) {
 
             $IblockItemData = array_shift(\Bitrix\Iblock\ElementTable::getList([
@@ -90,8 +100,7 @@ class VueBasket extends CBitrixComponent implements Controllerable{
                 'NAME' => $basketItem->getField('NAME'),
                 'QUANTITY' => $basketItem->getQuantity(),
                 'MAX_QUANTITY' => $arProduct['QUANTITY'],
-                'PRICE' => $basketItem->getPrice(),
-                'FINAL_PRICE' => $basketItem->getFinalPrice(),
+                'PRICE' => $prices[$basketItem->getId()],
                 'WEIGHT' => $basketItem->getWeight(),
                 'CAN_BUY' => $basketItem->canBuy(),
                 'IS_DELAY' => $basketItem->isDelay(),
@@ -105,7 +114,17 @@ class VueBasket extends CBitrixComponent implements Controllerable{
             ];
         }
 
-        return $basketItems;
+        return $basketItems ?? [];
+    }
+
+    private static function GetPrices()
+    {
+        $basket = self::GetBasketObject();
+        $basket->refreshData(['PRICE', 'COUPONS']);
+        $discounts = \Bitrix\Sale\Discount::buildFromBasket($basket, new \Bitrix\Sale\Discount\Context\Fuser($basket->getFUserId(true)));
+        $discounts->calculate();
+        $result = $discounts->getApplyResult(true);
+        return $result['PRICES']['BASKET'];
     }
 
     /**
@@ -134,9 +153,62 @@ class VueBasket extends CBitrixComponent implements Controllerable{
                 'MAX_QUANTITY' => $MaxQuantity,
             ];
         } catch (\Throwable $th) {
-            throw $th;
+            return $th;
         }
+    }
 
-    } 
+    /**
+     * Удаляем товар из корзины
+     */
+    public function DeleteItemAction(){
+
+        Loader::includeModule('iblock');
+        Loader::includeModule('sale');
+
+        $post = Application::getInstance()->getContext()->getRequest()->getPostList();
+
+        try {
+            if( !isset($post['ID']) || trim($post['ID']) == "" ) throw new Exception("Не корректный ID позиции товара в корзине");
+
+            $basket = self::GetBasketObject();
+            $basket->getItemById( (int)$post['ID'] )->delete();
+            $basket->save();
+            return;
+        } catch (\Throwable $th) {
+            return $th;
+        }
+    }
+
+    /**
+     * Восстановление товара в корзине (добавление товара в корзину)
+     */
+    public function RestoreItemAction(){
+        Loader::includeModule('iblock');
+        Loader::includeModule('sale');
+
+        $post = Application::getInstance()->getContext()->getRequest()->getPostList();
+
+        try {
+            if( !isset($post['PRODUCT_ID']) || trim($post['PRODUCT_ID']) == "" ) throw new Exception("Не корректный ID товара");
+            $Quantity = $post['QUANTITY'] ?? 1;
+
+            $basket = self::GetBasketObject();
+            $item = $basket->createItem('catalog', $post['PRODUCT_ID']);
+            $item->setFields(array(
+                'QUANTITY' => $Quantity,
+                'CURRENCY' => Bitrix\Currency\CurrencyManager::getBaseCurrency(),
+                'LID' => Bitrix\Main\Context::getCurrent()->getSite(),
+                'PRODUCT_PROVIDER_CLASS' => 'CCatalogProductProvider',
+            ));
+            $basket->save();
+
+            return [
+                'QUANTITY' => $Quantity,
+            ];
+
+        } catch (\Throwable $th) {
+            return $th;
+        }
+    }
 
 }
