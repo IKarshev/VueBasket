@@ -57,6 +57,7 @@ class VueBasket extends CBitrixComponent implements Controllerable{
         $this->arResult = [];
 
         $this->arResult['ITEMS'] = self::GetBasketItem();
+        $this->arResult['PRICE_FORMAT'] = CCurrencyLang::GetCurrencyFormat( \Bitrix\Currency\CurrencyManager::getBaseCurrency() )['FORMAT_STRING'];
 
         return $this->arResult;
     }
@@ -76,7 +77,14 @@ class VueBasket extends CBitrixComponent implements Controllerable{
      */
     private static function GetBasketItem():array
     {
+        global $USER;
         $basket = self::GetBasketObject();
+
+        $basket->refreshData(['PRICE', 'COUPONS']);
+        $discounts = \Bitrix\Sale\Discount::buildFromBasket($basket, new \Bitrix\Sale\Discount\Context\Fuser($basket->getFUserId(true)));
+        $discounts->calculate();
+        $prices = $discounts->getApplyResult(true)['PRICES']['BASKET'];
+
         foreach ($basket as $basketItem) {
 
             $IblockItemData = array_shift(\Bitrix\Iblock\ElementTable::getList([
@@ -92,8 +100,7 @@ class VueBasket extends CBitrixComponent implements Controllerable{
                 'NAME' => $basketItem->getField('NAME'),
                 'QUANTITY' => $basketItem->getQuantity(),
                 'MAX_QUANTITY' => $arProduct['QUANTITY'],
-                'PRICE' => $basketItem->getPrice(),
-                'FINAL_PRICE' => $basketItem->getFinalPrice(),
+                'PRICE' => $prices[$basketItem->getId()],
                 'WEIGHT' => $basketItem->getWeight(),
                 'CAN_BUY' => $basketItem->canBuy(),
                 'IS_DELAY' => $basketItem->isDelay(),
@@ -107,7 +114,17 @@ class VueBasket extends CBitrixComponent implements Controllerable{
             ];
         }
 
-        return $basketItems;
+        return $basketItems ?? [];
+    }
+
+    private static function GetPrices()
+    {
+        $basket = self::GetBasketObject();
+        $basket->refreshData(['PRICE', 'COUPONS']);
+        $discounts = \Bitrix\Sale\Discount::buildFromBasket($basket, new \Bitrix\Sale\Discount\Context\Fuser($basket->getFUserId(true)));
+        $discounts->calculate();
+        $result = $discounts->getApplyResult(true);
+        return $result['PRICES']['BASKET'];
     }
 
     /**

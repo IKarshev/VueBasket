@@ -8,9 +8,10 @@ $this->setFrameMode(true);
 ?>
 
 <div id="VueBasket">
-    <div class="items-container">
-        <table class="items-container-table">
-            <tbody>
+    <template v-if="arResult.ITEMS.length > 0">
+        <div class="items-container">
+            <table class="items-container-table">
+                <tbody>
                     <tr :class="{'basket-item':!item.DELETED_ITEM,'basket-item deleted':item.DELETED_ITEM}" v-for="(item, index) in arResult.ITEMS">
                         <template v-if="!item.DELETED_ITEM"><?// Обычный товар?>
                             <td class="basket-item-description">
@@ -35,8 +36,16 @@ $this->setFrameMode(true);
                                 <span><?=Loc::getMessage('VUE_BASKET_TOTAL_COUNT_TITLE')?>: {{ item.MAX_QUANTITY }}</span>
                             </td>
                             
-                            <td class="price">
-                                <div class="price-container">{{ GetFullPrice(item) }}</div>
+                            <td class="basket-item-price">
+                                <template v-if="item.PRICE.BASE_PRICE != item.PRICE.PRICE">
+                                    <div class="price-container sale">
+                                        <span>{{ FormatPrice(GetFullPrice(item)) }}</span>
+                                        <span>{{ FormatPrice(GetFullPrice(item, true)) }}</span>
+                                    </div>
+                                </template>
+                                <template v-else>
+                                    <div class="price-container">{{ FormatPrice(GetFullPrice(item)) }}</div>
+                                </template>
                             </td>
 
                             <td class="basket-item-action">
@@ -58,18 +67,24 @@ $this->setFrameMode(true);
                             </td>
                         </template>
                     </tr>
-            </tbody>
-        </table>
-        <?$APPLICATION->ShowViewContent('block_under_basket_items');?>
-    </div>
-
-    <div class="total-block-sticky-container">
-        <div class="total-block">
-            <div class="items-price">Сумма: {{ ItemsPrice }}</div>
-            <div class="sale-price">Скидка: {{ SalePrice }}</div>
-            <div class="total-price">Итого: {{ TotalPrice }}</div>
+                </tbody>
+            </table>
+            <?$APPLICATION->ShowViewContent('block_under_basket_items');?>
         </div>
-    </div>
+
+        <div class="total-block-sticky-container">
+            <div class="total-block">
+                <div class="items-price">Сумма: {{ FormatPrice(ItemsPrice) }}</div>
+                <div class="sale-price">Скидка: {{ FormatPrice(TotalSalePrice) }}</div>
+                <div class="total-price">Итого: {{ FormatPrice(TotalPrice) }}</div>
+            </div>
+        </div>
+    </template>
+
+    <template v-else>
+        <span class="empty-basket">Корзина пуста</span>
+    </template>
+
 </div>
 <script>
     BX.message({

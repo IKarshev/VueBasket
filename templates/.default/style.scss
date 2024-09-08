@@ -197,6 +197,23 @@
 						}
 					}
 				}
+				&-price{
+					.price-container{
+						position: relative;
+						width: max-content;
+						white-space: nowrap;
+						&.sale span{
+							&:first-child{
+								position: absolute;
+								top: 0;
+								right: 0;
+								transform: translate(100%, -100%);
+								color: #ED0A34;
+								text-decoration: line-through;
+							}
+						}
+					}
+				}
 			}
 		}
 	}

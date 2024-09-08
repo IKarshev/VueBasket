@@ -7,20 +7,28 @@ BX.ready(function(){
             SalePrice: 200,
         },
         computed: {
-            ItemsPrice() { // Возвращаем стоимость товаров
-                let ItemsPrice = 0;
+            ItemsPrice() { // Возвращаем полную стоимость товаров без скидок
+                let price = 0;
                 this.arResult.ITEMS.forEach(item => {
                     if (!item.DELETED_ITEM){
-                        ItemsPrice += item.QUANTITY * item.PRICE;
+                        price += item.QUANTITY * item.PRICE.BASE_PRICE;
                     }
                 });
 
-                return ItemsPrice;
+                return price;
             },
-
-            TotalPrice() { // Возвращаем итоговую стоимость
-                return Number(this.ItemsPrice) - Number(this.SalePrice);
-            }
+            TotalSalePrice() { // Возвращает сумму скидок товаров
+                let price = 0;
+                this.arResult.ITEMS.forEach(item => {
+                    if (!item.DELETED_ITEM){
+                        price += item.QUANTITY * item.PRICE.DISCOUNT;
+                    }
+                });
+                return price;
+            },
+            TotalPrice() { // Возвращаем проную стоимость товаров со скидками
+                return Number(this.ItemsPrice) - Number(this.TotalSalePrice);
+            },
         },
         methods: {
             QuantityPlus: function(item){ // Увеличиваем количество
@@ -37,9 +45,22 @@ BX.ready(function(){
                     this.QuantityChange(item);
                 }
             },
-            GetFullPrice: function(item){ // Возвращаем полную стоимость
+            FormatPrice: function(price){ // Форматируем цену
+                var decimal=2;
+                var separator=' ';
+                var decpoint = '.';
+                var r=parseFloat(price)
+                var exp10=Math.pow(10,decimal);
+                r=Math.round(r*exp10)/exp10;
+                rr=Number(r).toFixed(decimal).toString().split('.');
+                b=rr[0].replace(/(\d{1,3}(?=(\d{3})+(?:\.\d|\b)))/g,"\$1"+separator);
+                r=(rr[1]?b+ decpoint +rr[1]:b);
+                return this.arResult.PRICE_FORMAT.replace('#', r);
+            },
+            GetFullPrice: function(item, UseSalePrice = false){ // Возвращаем полную стоимость
                 // TODO - форматирование цены, подстановка валюты из настроек
-                return item.QUANTITY * item.PRICE;
+                price = (UseSalePrice) ? item.PRICE.PRICE : item.PRICE.BASE_PRICE;
+                return item.QUANTITY * price;
             },
             QuantityChange: function(item){ // Изменяем количество
 
@@ -99,6 +120,6 @@ BX.ready(function(){
                     }
                 );
             },
-        }
+        },
     });
 });

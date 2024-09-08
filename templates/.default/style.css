@@ -195,6 +195,20 @@
 #VueBasket .items-container-table .basket-item-action .icon.icon-delete::before {
   background-image: url("./images/delete.svg");
 }
+#VueBasket .items-container-table .basket-item-price .price-container {
+  position: relative;
+  width: -moz-max-content;
+  width: max-content;
+  white-space: nowrap;
+}
+#VueBasket .items-container-table .basket-item-price .price-container.sale span:first-child {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(100%, -100%);
+  color: #ED0A34;
+  text-decoration: line-through;
+}
 #VueBasket .total-block-sticky-container {
   width: 400px;
 }
